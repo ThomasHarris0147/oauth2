@@ -1,0 +1,35 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend
+  labels:
+    app: backend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: backend
+  template:
+    metadata:
+      labels:
+        app: backend
+    spec:
+      containers:
+        - name: nettube-backend
+          image: ghcr.io/teamf0147/backend:latest
+          imagePullPolicy: Always
+          env:
+          - name: SPRING_DATASOURCE_URL
+            value: jdbc:mariadb://mariadb.default.svc/backend?autoReconnect=true
+          - name: SPRING_DATASOURCE_USERNAME
+            value: root
+          - name: SPRING_DATASOURCE_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                name: mariadb-secret
+                key: password
+          ports:
+            - containerPort: 8080
+              name: backend
+      imagePullSecrets:
+        - name: dockerconfigjson-github-com

@@ -1,0 +1,45 @@
+server:
+  port: 8080
+
+spring:
+  datasource:
+    driver-class-name: org.mariadb.jdbc.Driver
+    hikari:
+      connection-timeout: '6000'
+      maximum-pool-size: '5'
+    url: jdbc:mariadb://${UMS_DB_IP:localhost}:${UMS_DB_PORT:3306}/${UMS_DB_NAME:backend}
+    username: '${UMS_DB_USER NAME:root}'
+    password: '${UMS_DB_PASSWORD:devpass}'
+  jpa:
+    database-platform: org.hibernate.dialect.MySQL5InnoDBDialect
+    show-sql: true
+    generate-ddl: true
+    hibernate:
+      ddl-auto: create
+  servlet:
+    multipart:
+      max-file-size: 5GB
+      max-request-size: 5GB
+  security:
+    oauth2:
+      client:
+        registration:
+          api-client-oidc:
+            provider: spring
+            client-id: api-client
+            client-secret: secret
+            authorization-grant-type: authorization_code
+            redirect-uri: "http://127.0.0.1:8080/login/oauth2/code/{registrationId}"
+            scope: openid
+            client-name: api-client-oidc
+          api-client-authorization-code:
+            provider: spring
+            client-id: api-client
+            client-secret: secret
+            authorization-grant-type: authorization_code
+            redirect-uri: "http://127.0.0.1:8080/authorized"
+            scope: api.read
+            client-name: api-client-authorization-code
+        provider:
+          spring:
+            issuer-uri: http://localhost:9000
